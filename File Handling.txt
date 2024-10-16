@@ -1,0 +1,6 @@
+Hello 
+This is for practice of File handling
+
+ And congratulation we know how to append know
+
+ And congratulation we know how to append now**

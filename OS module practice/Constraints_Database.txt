@@ -1,0 +1,172 @@
+
+SQL> create table stdAI(
+  2  id number(2) primary key,
+  3  name varchar2(20) not null,
+  4  phone varchar2(20) unique,
+  5  address varchar2(40) check( address in ('SWAT','KOHAT','DIR')),
+  6  age number(2) check( age between 20 and 25));
+create table stdAI(
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+
+SQL> edit
+Wrote file afiedt.buf
+
+  1  create table std2024(
+  2  id number(2) primary key,
+  3  name varchar2(20) not null,
+  4  phone varchar2(20) unique,
+  5  address varchar2(40) check( address in ('SWAT','KOHAT','DIR')),
+  6* age number(2) check( age between 20 and 25))
+SQL> run
+  1  create table std2024(
+  2  id number(2) primary key,
+  3  name varchar2(20) not null,
+  4  phone varchar2(20) unique,
+  5  address varchar2(40) check( address in ('SWAT','KOHAT','DIR')),
+  6* age number(2) check( age between 20 and 25))
+
+Table created.
+
+SQL> insert into std2024 values(1,'Imad','8888888','DIR',22);
+
+1 row created.
+
+SQL> insert into std2024 values(2,'Rehan','8888888','',22);
+insert into std2024 values(2,'Rehan','8888888','',22)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (SCOTT.SYS_C0018688) violated
+
+
+SQL> insert into std2024 values(2,'Rehan','888878','DIR',22);
+
+1 row created.
+
+SQL> insert into std2024 values(3,'Talha','848878','SWAT',22);
+
+1 row created.
+
+SQL> SELECT * FROM STD2024;
+
+        ID NAME                 PHONE                ADDRESS                                      AGE
+---------- -------------------- -------------------- ---------------------------------------- ----------
+         1 Imad                 8888888              DIR                                           22
+         2 Rehan                888878               DIR                                           22
+         3 Talha                848878               SWAT                                          22
+
+SQL> alter table std2024 modify address varchar2(20);
+
+Table altered.
+
+SQL> SELECT * FROM STD2024;
+
+        ID NAME                 PHONE                ADDRESS                     AGE
+---------- -------------------- -------------------- -------------------- ----------
+         1 Imad                 8888888              DIR                          22
+         2 Rehan                888878               DIR                          22
+         3 Talha                848878               SWAT                         22
+
+SQL> create table dept2024(
+  2  deptid number(2) primary key,
+  3  deptname varchar2(20) not null );
+
+Table created.
+
+SQL> insert into dept2024 values(1, 'AI');
+
+1 row created.
+
+SQL> insert into dept2024 values(2, 'Botany');
+
+1 row created.
+
+SQL> insert into dept2024 values(3, 'Chemistry');
+
+1 row created.
+
+SQL> select * from dept2024;
+
+    DEPTID DEPTNAME
+---------- --------------------
+         1 AI
+         2 Botany
+         3 Chemistry
+
+SQL> alter table student add constraint hamad_fk foreign key(deptid) references department(deptid);
+alter table student add constraint hamad_fk foreign key(deptid) references department(deptid)
+                                                        *
+ERROR at line 1:
+ORA-00904: "DEPTID": invalid identifier
+
+
+SQL> desc student;
+ Name                                                                                           Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ ID                                                                                             NOT NULL NUMBER(2)
+ NAME                                                                                            VARCHAR2(10)
+ AGE                                                                                             NUMBER(2)
+
+SQL> alter table student add deptid number(2);
+
+Table altered.
+
+SQL> alter table std2024 add deptid number(2);
+
+Table altered.
+
+SQL> desc std2024;
+ Name                                                                                           Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ ID                                                                                             NOT NULL NUMBER(2)
+ NAME                                                                                           NOT NULL VARCHAR2(20)
+ PHONE                                                                                           VARCHAR2(20)
+ ADDRESS                                                                                         VARCHAR2(20)
+ AGE                                                                                             NUMBER(2)
+ DEPTID                                                                                          NUMBER(2)
+
+SQL> alter table student add constraint hamad_fk foreign key(deptid) references department(deptid);
+alter table student add constraint hamad_fk foreign key(deptid) references department(deptid)
+                                                                                      *
+ERROR at line 1:
+ORA-00904: "DEPTID": invalid identifier
+
+
+SQL> edit
+Wrote file afiedt.buf
+
+  1* alter table student add constraint hamad_fk foreign key(deptid) references department(deptid)
+SQL> run
+  1* alter table student add constraint hamad_fk foreign key(deptid) references department(deptid)
+alter table student add constraint hamad_fk foreign key(deptid) references department(deptid)
+                                                                                      *
+ERROR at line 1:
+ORA-00904: "DEPTID": invalid identifier
+
+
+SQL> edit
+Wrote file afiedt.buf
+
+  1* alter table std2024 add constraint hamad_fk foreign key(deptid) references dept2024(deptid)
+SQL> run
+  1* alter table std2024 add constraint hamad_fk foreign key(deptid) references dept2024(deptid)
+
+Table altered.
+
+SQL> select * from dept2024;
+
+    DEPTID DEPTNAME
+---------- --------------------
+         1 AI
+         2 Botany
+         3 Chemistry
+
+SQL> select * from std2024;
+
+        ID NAME                 PHONE                ADDRESS                     AGE     DEPTID
+---------- -------------------- -------------------- -------------------- ---------- ----------
+         1 Imad                 8888888              DIR                          22
+         2 Rehan                888878               DIR                          22
+         3 Talha                848878               SWAT                         22

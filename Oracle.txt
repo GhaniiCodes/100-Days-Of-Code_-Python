@@ -1,0 +1,476 @@
+SQL> select min(sal) from emp;
+
+  MIN(SAL)                                                                      
+----------                                                                      
+       800                                                                      
+
+SQL> select max(sal) from emp;
+
+  MAX(SAL)                                                                      
+----------                                                                      
+      5000                                                                      
+
+SQL> select avg(sal) from emp;
+
+  AVG(SAL)                                                                      
+----------                                                                      
+2073.21429      
+
+
+
+Description
+
+The Oracle GROUP BY clause is used in a SELECT statement to collect data across multiple records and group the results by one or more columns.
+
+Syntax
+
+The syntax for the GROUP BY clause in Oracle/PLSQL is:
+
+SELECT expression1, expression2, ... expression_n, 
+       aggregate_function (aggregate_expression)
+FROM tables
+[WHERE conditions]
+GROUP BY expression1, expression2, ... expression_n;
+Parameters or Arguments
+
+expression1, expression2, ... expression_n
+The expressions that are not encapsulated within an aggregate function and must be included in the GROUP BY clause.
+
+aggregate_function
+It can be a function such as SUM, COUNT, MIN, MAX, or AVG functions.
+
+aggregate_expression
+This is the column or expression that the aggregate_function will be used on.
+
+tables
+The tables that you wish to retrieve records from. There must be at least one table listed in the FROM clause.
+WHERE conditions
+
+Optional. The conditions that must be met for the records to be selected.
+
+Example - Using SUM function
+
+Let's look at an Oracle GROUP BY query example that uses the SUM function.
+
+This Oracle GROUP BY example uses the SUM function to return the name(title) of the job and the total sales (for that job title).
+
+select job,sum(sal),min(sal),max(sal),avg(sal),count(*) 
+from emp 
+group by job;
+
+JOB         SUM(SAL)   MIN(SAL)   MAX(SAL)   AVG(SAL)   COUNT(*)
+--------- ---------- ---------- ---------- ---------- ----------
+CLERK           4150        800       1300     1037.5          4
+SALESMAN        5600       1250       1600       1400          4
+PRESIDENT       5000       5000       5000       5000          1
+MANAGER         8275       2450       2975 2758.33333          3
+ANALYST         6000       3000       3000       3000          2
+
+Because you have listed one column (the job field) in your SELECT statement that is not encapsulated in the aggregate function, you must use the GROUP BY clause. The job field must, therefore, be listed in the GROUP BY clause.
+
+Example - Using COUNT function
+
+Let's look at how we could use the GROUP BY clause with the COUNT function.
+
+This GROUP BY example uses the COUNT function to return the job category and the number of employees (in that category) that have over 2000 salary.
+
+SELECT job, COUNT(*) AS "Number of Employees"
+FROM suppliers
+WHERE sal > 2000
+GROUP BY job;
+
+JOB       Number of Employees
+--------- -------------------
+PRESIDENT                   1
+MANAGER                     3
+ANALYST                     2
+
+Example - Using MIN function
+
+Let's next look at how we could use the GROUP BY clause with the MIN function.
+
+This GROUP BY example uses the MIN function to return the number of each department and the minimum salary in the department.
+
+SELECT deptno, MIN(sal) AS "Lowest salary"
+FROM emp
+GROUP BY deptno;
+
+ DEPTNO Lowest salary
+---------- -------------
+        30           950
+        20           800
+        10          1300
+
+
+Example - Using MAX function
+
+Finally, let's look at how we could use the GROUP BY clause with the MAX function.
+
+This GROUP BY example uses the MAX function to return the number of each department and the maximum salary in the department.
+
+SELECT deptno, Max(sal) AS "Highest salary"
+FROM emp
+GROUP BY deptno;
+
+
+DEPTNO Highest salary
+---------- --------------
+        30           2850
+        20           3000
+        10           5000
+
+
+Description
+
+The Oracle/PLSQL COUNT function returns the count of an expression.
+
+Syntax
+
+The syntax for the COUNT function in Oracle/PLSQL is:
+
+SELECT COUNT(aggregate_expression)
+FROM tables
+[WHERE conditions];
+
+OR the syntax for the COUNT function when grouping the results by one or more columns is:
+
+SELECT expression1, expression2, ... expression_n,
+       COUNT(aggregate_expression)
+FROM tables
+[WHERE conditions]
+GROUP BY expression1, expression2, ... expression_n;
+
+Parameters or Arguments
+
+expression1, expression2, ... expression_n are expressions that are not encapsulated within the COUNT function and must be included in the GROUP BY clause at the end of the SQL statement.
+
+aggregate_expression
+This is the column or expression whose non-null values will be counted.
+tables
+The tables that you wish to retrieve records from. There must be at least one table listed in the FROM clause.
+WHERE conditions
+Optional. These are conditions that must be met for the records to be selected.
+Only includes NOT NULL Values
+
+Not everyone realizes this, but the COUNT function will only include the records in the count where the value of expression in COUNT(expression) is NOT NULL. 
+When expression contains a NULL value, it is not included in the COUNT calculations.
+
+Let's look at a COUNT function example that demonstrates how NULL values are evaluated by the COUNT function.
+
+
+
+
+SQL> select count(empno) from emp;
+
+COUNT(EMPNO)
+------------
+          14
+
+
+This COUNT example will return 14 since all values of empno in the query's result set are NOT NULL.
+
+However, if you ran the next SELECT statement that uses the COUNT function:
+SQL> select count(comm) from emp;
+
+COUNT(COMM)
+-----------
+          4
+
+This COUNT example will only return 4, since only one comm values in the query's result set is NOT NULL. 
+
+Applies To
+
+Example - With Single Field
+
+
+
+For example, you might wish to know how many employees have a salary above $2,000 / year.
+
+SELECT COUNT(*) AS "Number of employees"
+FROM emp
+WHERE sal > 3000;
+
+In this COUNT function example, we've aliased the COUNT(*) expression as "Number of employees". As a result, "Number of employees" will display as the field name when the result set is returned.
+
+Example - Using DISTINCT
+
+You can use the DISTINCT clause within the COUNT function. For example, the SQL statement below returns the number of unique departments where at least one employee makes over $55,000 / year.
+
+SELECT COUNT(DISTINCT deptno) AS "Unique departments"
+FROM emp
+WHERE sal > 1500;
+
+select count(job) from emp;
+
+COUNT(JOB)
+----------
+        14
+
+select count(distinct job) from emp
+SQL> /
+
+COUNT(DISTINCTJOB)
+------------------
+                 5
+
+Example - Using GROUP BY
+
+In some cases, you will be required to use the GROUP BY clause with the COUNT function.
+
+
+For example, you could also use the COUNT function to return the number of the department and the number of employees (in the associated department) that are clerks.
+
+
+select deptno, count(job) as 'clerks' from emp where job='CLERK' group by deptno;
+
+    DEPTNO COUNT(JOB)
+---------- ----------
+        30          1
+        20          2
+        10          1
+
+select deptno, count(job) from emp where job='MANAGER' and sal>1500  group by deptno;
+
+
+    DEPTNO COUNT(JOB)
+---------- ----------
+        30          1
+        20          1
+        10          1
+
+Because you have listed one column in your SELECT statement that is not encapsulated in the COUNT function, you must use a GROUP BY clause. The department field must, therefore, be listed in the GROUP BY section.
+
+
+                                                               
+
+SQL> select sum(sal),min(sal),max(sal),count(*),avg(sal) from emp;
+
+  SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)                          
+---------- ---------- ---------- ---------- ----------                          
+     29025        800       5000         15 2073.21429                          
+
+SQL> select sum(sal),min(sal),max(sal),count(*),avg(sal) from emp where deptno=10;
+
+  SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)                          
+---------- ---------- ---------- ---------- ----------                          
+      8750       1300       5000          3 2916.66667                          
+
+SQL> select sum(sal),min(sal),max(sal),count(*),avg(sal) from emp where job='MANAGER';
+
+  SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)                          
+---------- ---------- ---------- ---------- ----------                          
+      8275       2450       2975          3 2758.33333                          
+
+SQL> select sum(sal),min(sal),max(sal),count(*),avg(sal) from emp group by deptno;
+
+  SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)                          
+---------- ---------- ---------- ---------- ----------                          
+      9400        950       2850          7 1566.66667                          
+     10875        800       3000          5       2175                          
+      8750       1300       5000          3 2916.66667                          
+
+SQL> select deptno,sum(sal),min(sal),max(sal),count(*),avg(sal) from emp group by deptno;
+
+    DEPTNO   SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)               
+---------- ---------- ---------- ---------- ---------- ----------               
+        30       9400        950       2850          7 1566.66667               
+        20      10875        800       3000          5       2175               
+        10       8750       1300       5000          3 2916.66667               
+
+SQL> select job,sum(sal),min(sal),max(sal),count(*),avg(sal) from emp group by job;
+
+JOB         SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)                
+--------- ---------- ---------- ---------- ---------- ----------                
+                                                    1                           
+CLERK           4150        800       1300          4     1037.5                
+SALESMAN        5600       1250       1600          4       1400                
+PRESIDENT       5000       5000       5000          1       5000                
+MANAGER         8275       2450       2975          3 2758.33333                
+ANALYST         6000       3000       3000          2       3000                
+
+6 rows selected.
+
+SQL> select job,sum(sal),min(sal),max(sal),count(*),avg(sal) from emp group by job order by job asc;          
+
+JOB         SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)                
+--------- ---------- ---------- ---------- ---------- ----------                
+ANALYST         6000       3000       3000          2       3000                
+CLERK           4150        800       1300          4     1037.5                
+MANAGER         8275       2450       2975          3 2758.33333                
+PRESIDENT       5000       5000       5000          1       5000                
+SALESMAN        5600       1250       1600          4       1400                
+                                                    1                           
+
+6 rows selected.
+// desc is used for descending
+
+SQL> select job,sum(sal),min(sal),max(sal),count(*),avg(sal) from emp group by job order by job;
+
+JOB         SUM(SAL)   MIN(SAL)   MAX(SAL)   COUNT(*)   AVG(SAL)                
+--------- ---------- ---------- ---------- ---------- ----------                
+ANALYST         6000       3000       3000          2       3000                
+CLERK           4150        800       1300          4     1037.5                
+MANAGER         8275       2450       2975          3 2758.33333                
+PRESIDENT       5000       5000       5000          1       5000                
+SALESMAN        5600       1250       1600          4       1400                
+                                                    1                           
+
+6 rows selected.
+
+SQL> select ename,job,sal ,min(sal) from emp;
+select ename,job,sal ,min(sal) from emp
+       *
+ERROR at line 1:
+ORA-00937: not a single-group group function 
+
+
+SQL> select min(sal) from emp;
+
+  MIN(SAL)                                                                      
+----------                                                                      
+       800                                                                      
+
+SQL> select ename ,job ,sal from emp where sal=800;
+
+ENAME      JOB              SAL                                                 
+---------- --------- ----------                                                 
+SMITH      CLERK            800                                                 
+
+SQL> select ename ,job ,sal from emp where sal=(select min(sal) from emp);
+
+ENAME      JOB              SAL                                                 
+---------- --------- ----------                                                 
+SMITH      CLERK            800                                                 
+
+How to get second smallest salary from employee table.
+
+SQL> select ename,sal,job from emp where
+      sal=(select min(sal) from emp where
+      sal>(select min(sal) from emp));
+
+ENAME             SAL JOB                                                       
+---------- ---------- ---------                                                 
+JAMES             950 CLERK                                                     
+
+Second largest salary
+
+SQL> select ename,sal,job from emp where
+    sal=(select max(sal) from emp where
+    sal<(select max(sal) from emp));
+
+ENAME             SAL JOB                                                       
+---------- ---------- ---------                                                 
+SCOTT            3000 ANALYST                                                   
+FORD             3000 ANALYST                                                   
+
+
+Third largest employee salary
+
+SQL> select ename,sal,job from emp where  
+sal=(select max(sal) from emp where 
+sal<(select max(sal)from emp where sal<(select max(sal) from emp)));
+
+ENAME             SAL JOB
+---------- ---------- ---------
+JONES            2975 MANAGER
+
+what is department number of smith.
+
+
+
+SQL> select DEPTNO, ename,sal from emp where deptno=(select deptno from emp where ename='SMITH');
+
+    DEPTNO ENAME             SAL                                                
+---------- ---------- ----------                                                
+        20 SMITH             800                                                
+        20 JONES            2975                                                
+        20 SCOTT            3000                                                
+        20 ADAMS            1100                                                
+        20 FORD             3000                                                
+
+SQL> select DEPTNO, ename,sal from emp where deptno=(select deptno from emp where ename<>'SMITH');
+
+select DEPTNO, ename,sal from emp where deptno=(select deptno from emp where ename<>'SMITH')
+                                                *
+ERROR at line 1:
+ORA-01427: single-row subquery returns more than one row 
+
+
+
+Top 3 max salaries, although two are same i.e3000
+
+select ename,sal,job from emp where
+sal=(select max(sal) from emp) or  sal=(select max(sal) from emp where 
+sal< (select max(sal) from emp)) or sal=(select max(sal) from emp where 
+sal< (select max(sal) from emp where sal<(select max(sal) from emp))) order by sal desc
+
+ENAME             SAL JOB
+---------- ---------- ---------
+KING             5000 PRESIDENT
+FORD             3000 ANALYST
+SCOTT            3000 ANALYST
+JONES            2975 MANAGER
+
+Dispaly the detail record employees of smith department exluding smith
+
+SQL> select DEPTNO, ename,sal from emp where deptno=(select deptno from emp where ename='SMITH') AND ENAME<>'SMITH';
+
+    DEPTNO ENAME             SAL                                                
+---------- ---------- ----------                                                
+        20 JONES            2975                                                
+        20 SCOTT            3000                                                
+        20 ADAMS            1100                                                
+        20 FORD             3000                                                
+
+SQL> SPOOL OFF
+
+SQL> select deptno,avg(sal) from emp where sal>2000 group by deptno;
+
+    DEPTNO   AVG(SAL)
+---------- ----------
+        30       2850
+        20 2991.66667
+        10       3725
+
+
+Where clause is not allowed with group function. Instead, having clause is used.
+
+
+SQL> select deptno,avg(sal) from emp having avg(sal)>2500 group by deptno;
+
+    DEPTNO   AVG(SAL)
+---------- ----------
+        10 2916.66667
+
+select ename, min(hiredate) from emp group by ename;
+
+ENAME      MIN(HIRED
+---------- ---------
+ALLEN      20-FEB-81
+JONES      02-APR-81
+FORD       03-DEC-81
+CLARK      09-JUN-81
+MILLER     23-JAN-82
+SMITH      17-DEC-80
+WARD       22-FEB-81
+MARTIN     28-SEP-81
+SCOTT      19-APR-87
+TURNER     08-SEP-81
+ADAMS      23-MAY-87
+BLAKE      01-MAY-81
+KING       17-NOV-81
+JAMES      03-DEC-81
+
+SQL>  select ename,min(hiredate) from emp where hiredate=(select min(hiredate) from emp) group by ename.
+ame;
+
+ENAME      MIN(HIRED
+---------- ---------
+SMITH      17-DEC-80
+
+SQL> select ename,max(hiredate) from emp where hiredate=(select max(hiredate) from emp) group by ename;
+me;
+
+ENAME      MAX(HIRED
+---------- ---------
+ADAMS      23-MAY-87
